@@ -11,22 +11,17 @@ Add rate limits to your Nuxt 3 API routes.
 
 ## Features
 
-- Set rate limits per API route
-- Returns seconds until reset
-- Takes seconds to setup
+- 🛑 Set rate limits per API route
+- 🕒 Returns seconds until reset
+- ⚡ Takes seconds to setup
 
 ## Quick Setup
 
 1. Add `nuxt-rate-limit` dependency to your project
 
 ```bash
-# Using pnpm
 pnpm add -D nuxt-rate-limit
-
-# Using yarn
 yarn add --dev nuxt-rate-limit
-
-# Using npm
 npm install --save-dev nuxt-rate-limit
 ```
 
@@ -42,13 +37,13 @@ That's it! You can now use Nuxt Rate Limit in your Nuxt app ✨
 
 ## Settings
 
-**Enable**
+**`Enable`**
 
 You can turn the rate limit module off at anytime by adding `enabled: false` key to your `nuxtRateLimit` options.
 
 ---
 
-**Default Rate Limit**
+**`Default Rate Limit`**
 
 By default, we add a rate limit to all of your /api routes. You can override this setting by adding `/api/*` to the `nuxtRateLimit` routes in your `nuxt.config.ts`:
 
@@ -67,7 +62,7 @@ export default defineNuxtConfig({
 
 ---
 
-**Different limits per route**
+**`Different limits per route`**
 
 You can also add limits per route:
 
@@ -78,6 +73,10 @@ export default defineNuxtConfig({
       '/api/hello': {
         maxRequests: 5,
         intervalSeconds: 10,
+      },
+      '/api/goodbye': {
+        maxRequests: 15,
+        intervalSeconds: 60,
       },
     },
   },
