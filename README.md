@@ -43,7 +43,7 @@ You can turn the rate limit module off at anytime by adding `enabled: false` key
 
 ---
 
-**`Default Rate Limit`**
+**Default Rate Limit**
 
 By default, we add a rate limit to all of your /api routes. You can override this setting by adding `/api/*` to the `nuxtRateLimit` routes in your `nuxt.config.ts`:
 
@@ -62,7 +62,7 @@ export default defineNuxtConfig({
 
 ---
 
-**`Different limits per route`**
+**Different limits per route**
 
 You can also add limits per route:
 
