@@ -1,10 +1,5 @@
 # Nuxt Rate Limit
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![License][license-src]][license-href]
-[![Nuxt][nuxt-src]][nuxt-href]
-
 Add rate limits to your Nuxt 3 API routes.
 
 - [🏀 Online playground](https://stackblitz.com/github/timb-103/nuxt-rate-limit?file=playground%2Fapp.vue)
