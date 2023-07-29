@@ -1,4 +1,5 @@
 export default defineNuxtConfig({
+  devtools: { enabled: false },
   modules: ['../src/module'],
   nuxtRateLimit: {
     enabled: true,
@@ -13,5 +14,4 @@ export default defineNuxtConfig({
       },
     },
   },
-  devtools: { enabled: false },
 })

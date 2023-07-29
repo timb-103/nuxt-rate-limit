@@ -21,10 +21,11 @@ export function isRateLimited(event: H3Event) {
     const ip = getIP(event)
 
     // Strip any query parameters from the URL
-    const url = urlWithParams.split('?')[0]
+    const splitURL = urlWithParams.split('?')[0]
+    // const url = urlWithParams.split('?')[0]
 
     // configure the route settings
-    const route = routes[url] ? url : '/api/*'
+    const url = routes[splitURL] ? splitURL : '/api/*'
     const maxRequests = routes[url].maxRequests
     const interval = routes[url].intervalSeconds * 1000
 
@@ -50,13 +51,13 @@ export function isRateLimited(event: H3Event) {
 
     // add a rate limit object, or set to existing
     rateLimit[ip] = rateLimit[ip] || {}
-    rateLimit[ip][route] = rateLimit[ip][route] || {
+    rateLimit[ip][url] = rateLimit[ip][url] || {
       firstRequestTime: Number(new Date()),
       requests: 0,
     }
 
     // check if the IP & URL is rate limited, return seconds until reset if it is
-    const requests = rateLimit[ip][route].requests
+    const requests = rateLimit[ip][url].requests
     if (requests >= maxRequests) {
       const timeSinceFirstRequest = currentTime - rateLimit[ip][url].firstRequestTime
       const secondsUntilReset = Math.ceil((interval - timeSinceFirstRequest) / 1000)
@@ -64,7 +65,7 @@ export function isRateLimited(event: H3Event) {
     }
 
     // increment the requests counter
-    rateLimit[ip][route].requests++
+    rateLimit[ip][url].requests++
   } catch (error) {
     console.log('Error checking rate limits:', error)
   }
