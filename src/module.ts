@@ -23,7 +23,7 @@ export default defineNuxtModule<ModuleOptions>({
     routes: {
       '/api/*': {
         intervalSeconds: 60,
-        maxRequests: 5,
+        maxRequests: 100,
       },
     },
   },
