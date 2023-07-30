@@ -30,15 +30,14 @@ export default defineNuxtConfig({
 
 That's it! You can now use Nuxt Rate Limit in your Nuxt app ✨
 
-## Settings
+## Options
 
-**`Enable`**
+| name | type | default | description |
+| --- | --- | --- | --- |
+| `enabled` | `boolean` | `true` | Enabled/disable the rate limit module |
+| `routes` | `object` | [`{}`](https://github.com/timb-103/nuxt-rate-limit/edit/master/README.md#default-rate-limit) | [Add rate limits per route](https://github.com/timb-103/nuxt-rate-limit/edit/master/README.md#different-limits-per-route) |
 
-You can turn the rate limit module off at anytime by adding `enabled: false` key to your `nuxtRateLimit` options.
-
----
-
-**Default Rate Limit**
+## Default Rate Limit
 
 By default, we add a rate limit to all of your /api routes. You can override this setting by adding `/api/*` to the `nuxtRateLimit` routes in your `nuxt.config.ts`:
 
@@ -54,10 +53,7 @@ export default defineNuxtConfig({
   },
 })
 ```
-
----
-
-**Different limits per route**
+## Different limits per route
 
 You can also add limits per route:
 
