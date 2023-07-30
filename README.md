@@ -2,6 +2,8 @@
 
 Add rate limits to your Nuxt 3 API routes.
 
+By default, this module will add a rate limit to any requests to a `/api` endpoint.
+
 - [🏀 Online playground](https://stackblitz.com/github/timb-103/nuxt-rate-limit?file=playground%2Fapp.vue)
 
 ## Features
@@ -14,7 +16,7 @@ Add rate limits to your Nuxt 3 API routes.
 
 1. Add `nuxt-rate-limit` dependency to your project
 
-```bash
+```sh
 pnpm add -D nuxt-rate-limit
 yarn add --dev nuxt-rate-limit
 npm install --save-dev nuxt-rate-limit
