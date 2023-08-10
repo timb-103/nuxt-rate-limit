@@ -1,12 +1,17 @@
 import { H3Event, getRequestHeader } from 'h3'
-import { useRuntimeConfig } from '#imports'
-import type { RateLimit, RateLimitRoutes } from '../../../types'
+import { getRouteRules } from '#imports'
+import type { RateLimit } from '../../../types'
+import { RouteRateLimit } from '../../../types'
+
+interface RateLimitResponse {
+  limited: boolean
+  limit: number
+  current: number
+  secondsUntilReset: number
+}
 
 // store rate limits for each IP address and URL
 const rateLimit: RateLimit = {}
-
-// the routes we will rate limit
-const routes: RateLimitRoutes = useRuntimeConfig().public.nuxtRateLimit.routes
 
 /**
  * This function checks whether a request from a given IP address and URL should be rate limited
@@ -15,62 +20,54 @@ const routes: RateLimitRoutes = useRuntimeConfig().public.nuxtRateLimit.routes
  *
  * @param event
  */
-export function isRateLimited(event: H3Event) {
-  try {
-    const urlWithParams = event.node.req?.url as string
-    const ip = getIP(event)
+export function getRateLimitPayload(event: H3Event): false | RateLimitResponse {
+  const routeRules = getRouteRules(event)
+  if (!routeRules['nuxt-rate-limit']) {
+    return false
+  }
 
-    // Strip any query parameters from the URL
-    const splitURL = urlWithParams.split('?')[0]
-    // const url = urlWithParams.split('?')[0]
+  const { maxRequests, intervalSeconds, route }: RouteRateLimit = routeRules['nuxt-rate-limit']
+  const intervalMs = intervalSeconds * 1000
+  const ip = getIP(event)
 
-    // configure the route settings
-    const url = routes[splitURL] ? splitURL : '/api/*'
-    const maxRequests = routes[url].maxRequests
-    const interval = routes[url].intervalSeconds * 1000
+  // remove any IPs & URLs that haven't been used since interval to keep object small
+  const currentTime = Date.now()
+  Object.keys(rateLimit).forEach((key: keyof RateLimit) => {
+    Object.keys(rateLimit[key]).forEach((urlKey: string) => {
+      const item = rateLimit[key][urlKey]
+      const timeSinceLastRequest = currentTime - item.firstRequestTime
+      const routeInterval = intervalSeconds * 1000
 
-    // remove any IPs & URLs that haven't been used since interval to keep object small
-    const currentTime = Date.now()
-    Object.keys(rateLimit).forEach((key: keyof RateLimit) => {
-      Object.keys(rateLimit[key]).forEach((urlKey: string) => {
-        const item = rateLimit[key][urlKey]
-        const timeSinceLastRequest = currentTime - item.firstRequestTime
-        const routeInterval = routes[urlKey].intervalSeconds * 1000
-
-        // remove the url
-        if (timeSinceLastRequest >= routeInterval) {
-          delete rateLimit[key][urlKey]
-        }
-      })
-
-      // remove the ip
-      if (!Object.keys(rateLimit[key]).length) {
-        delete rateLimit[key]
+      // remove the url
+      if (timeSinceLastRequest >= routeInterval) {
+        delete rateLimit[key][urlKey]
       }
     })
 
-    // add a rate limit object, or set to existing
-    rateLimit[ip] = rateLimit[ip] || {}
-    rateLimit[ip][url] = rateLimit[ip][url] || {
-      firstRequestTime: Number(new Date()),
-      requests: 0,
+    // remove the ip
+    if (!Object.keys(rateLimit[key]).length) {
+      delete rateLimit[key]
     }
+  })
 
-    // check if the IP & URL is rate limited, return seconds until reset if it is
-    const requests = rateLimit[ip][url].requests
-    if (requests >= maxRequests) {
-      const timeSinceFirstRequest = currentTime - rateLimit[ip][url].firstRequestTime
-      const secondsUntilReset = Math.ceil((interval - timeSinceFirstRequest) / 1000)
-      return secondsUntilReset
-    }
-
-    // increment the requests counter
-    rateLimit[ip][url].requests++
-  } catch (error) {
-    console.log('Error checking rate limits:', error)
+  // add a rate limit object, or set to existing
+  rateLimit[ip] = rateLimit[ip] || {}
+  // we index the rate limiting based on the route rule route, this allows us to rate limit a wild card entry using the same
+  // rate limit object, eg: /api/* will use the same rate limit object for /api/foo and /api/bar
+  rateLimit[ip][route] = rateLimit[ip][route] || {
+    firstRequestTime: Number(new Date()),
+    requests: 0,
   }
 
-  return 0
+  const timeSinceFirstRequest = currentTime - rateLimit[ip][route].firstRequestTime
+  const secondsUntilReset = Math.ceil((intervalMs - timeSinceFirstRequest) / 1000)
+  const limited = rateLimit[ip][route].requests >= maxRequests
+  // increment the requests counter
+  if (!limited) {
+    rateLimit[ip][route].requests++
+  }
+
+  return { limited, limit: maxRequests, current: rateLimit[ip][route].requests, secondsUntilReset }
 }
 
 /**

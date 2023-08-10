@@ -11,6 +11,7 @@ By default, this module will add a rate limit to any requests to a `/api` endpoi
 - 🛑 Set rate limits per API route
 - 🕒 Returns seconds until reset
 - ⚡ Takes seconds to setup
+- 🧾 Response x-ratelimit headers
 
 ## Quick Setup
 
@@ -37,6 +38,7 @@ That's it! You can now use Nuxt Rate Limit in your Nuxt app ✨
 | name | type | default | description |
 | --- | --- | --- | --- |
 | `enabled` | `boolean` | `true` | Enabled/disable the rate limit module |
+| `enabled` | `boolean` | `true` | Add x-ratelimit headers to response |
 | `routes` | `object` | [`{}`](https://github.com/timb-103/nuxt-rate-limit/edit/master/README.md#default-rate-limit) | [Add rate limits per route](https://github.com/timb-103/nuxt-rate-limit/edit/master/README.md#different-limits-per-route) |
 
 ## Default Rate Limit

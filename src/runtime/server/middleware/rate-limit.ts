@@ -1,5 +1,5 @@
-import { defineEventHandler, createError } from 'h3'
-import { isRateLimited } from '../utils/rate-limit'
+import { defineEventHandler, createError, setHeader } from 'h3'
+import { getRateLimitPayload} from '../utils/rate-limit'
 import { useRuntimeConfig } from '#imports'
 
 /**
@@ -8,17 +8,25 @@ import { useRuntimeConfig } from '#imports'
  * Only works on API routes, eg: /api/hello
  */
 export default defineEventHandler(async (event) => {
-  const isAPI = event.node.req.url?.includes('/api/')
-  const isEnabled = useRuntimeConfig().public.nuxtRateLimit.enabled
+  const { headers } = useRuntimeConfig().nuxtRateLimit
 
-  if (isAPI && isEnabled) {
-    const limited = isRateLimited(event)
+  const payload = getRateLimitPayload(event)
+  // route does not have rate limiting configured
+  if (!payload) {
+    return
+  }
+  const { limited, current, limit, secondsUntilReset } = payload
 
-    if (limited) {
-      throw createError({
-        statusCode: 429,
-        statusMessage: `Too many requests. Please try again in ${limited} seconds.`,
-      })
-    }
+  if (headers) {
+    setHeader(event, 'x-ratelimit-current', current)
+    setHeader(event, 'x-ratelimit-limit', limit)
+    setHeader(event, 'x-ratelimit-reset', secondsUntilReset)
+  }
+
+  if (limited) {
+    throw createError({
+      statusCode: 429,
+      statusMessage: `Too many requests. Please try again in ${secondsUntilReset} seconds.`,
+    })
   }
 })

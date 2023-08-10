@@ -11,10 +11,13 @@
     <p>intervalSeconds: 10</p>
     <p>response: {{ helloResponse }}</p>
     <button @click="hello()">Send request to /hello</button>
+    <div class="group" v-if="helloPayload">
+      <pre v-html="JSON.stringify(helloPayload)"></pre>
+    </div>
   </div>
 
   <div class="group">
-    <p>url: /api/hello</p>
+    <p>url: /api/goodbye</p>
     <p>maxRequests: 10</p>
     <p>intervalSeconds: 60</p>
     <p>response: {{ goodbyeResponse }}</p>
@@ -27,13 +30,19 @@ import { ref } from '#imports'
 
 const helloResponse = ref('')
 const goodbyeResponse = ref('')
+const helloPayload = ref({})
 
 async function hello() {
   helloResponse.value = ''
 
   try {
-    const response = await $fetch('/api/hello')
-    helloResponse.value = response
+    const response = await $fetch.raw('/api/hello')
+    helloPayload.value = {
+      current: response.headers.get('x-ratelimit-current'),
+      limit: response.headers.get('x-ratelimit-limit'),
+      reset: response.headers.get('x-ratelimit-reset'),
+    }
+    helloResponse.value = response._data || ''
   } catch (error: any) {
     helloResponse.value = error.statusMessage
   }
