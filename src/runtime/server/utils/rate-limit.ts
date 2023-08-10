@@ -1,7 +1,14 @@
-import {H3Event, getRequestHeader, getRequestURL} from 'h3'
+import { H3Event, getRequestHeader } from 'h3'
 import { getRouteRules } from '#imports'
 import type { RateLimit } from '../../../types'
-import {RouteRateLimitOptions} from "../../../types";
+import { RouteRateLimit } from '../../../types'
+
+interface RateLimitResponse {
+  limited: boolean
+  limit: number
+  current: number
+  secondsUntilReset: number
+}
 
 // store rate limits for each IP address and URL
 const rateLimit: RateLimit = {}
@@ -13,12 +20,13 @@ const rateLimit: RateLimit = {}
  *
  * @param event
  */
-export function getRateLimitPayload(event: H3Event) : false | { limited: boolean; limit: number; current: number; secondsUntilReset: number } {
+export function getRateLimitPayload(event: H3Event): false | RateLimitResponse {
   const routeRules = getRouteRules(event)
   if (!routeRules['nuxt-rate-limit']) {
     return false
   }
-  const { maxRequests, intervalSeconds, route } = routeRules['nuxt-rate-limit'] as RouteRateLimitOptions
+
+  const { maxRequests, intervalSeconds, route }: RouteRateLimit = routeRules['nuxt-rate-limit']
   const intervalMs = intervalSeconds * 1000
   const ip = getIP(event)
 

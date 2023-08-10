@@ -1,3 +1,9 @@
+export interface RouteRateLimit {
+  maxRequests: number
+  intervalSeconds: number
+  route: string
+}
+
 export interface RouteRateLimitOptions {
   maxRequests: number
   intervalSeconds: number

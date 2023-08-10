@@ -12,7 +12,7 @@
     <p>response: {{ helloResponse }}</p>
     <button @click="hello()">Send request to /hello</button>
     <div class="group" v-if="helloPayload">
-      <pre v-html="JSON.stringify(helloPayload)" />
+      <pre v-html="JSON.stringify(helloPayload)"></pre>
     </div>
   </div>
 
@@ -23,7 +23,6 @@
     <p>response: {{ goodbyeResponse }}</p>
     <button @click="goodbye()">Send request to /goodbye</button>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -43,7 +42,7 @@ async function hello() {
       limit: response.headers.get('x-ratelimit-limit'),
       reset: response.headers.get('x-ratelimit-reset'),
     }
-    helloResponse.value = response._data
+    helloResponse.value = response._data || ''
   } catch (error: any) {
     helloResponse.value = error.statusMessage
   }

@@ -1,4 +1,4 @@
-import { defineEventHandler, createError, setHeader, getRequestURL } from 'h3'
+import { defineEventHandler, createError, setHeader } from 'h3'
 import { getRateLimitPayload} from '../utils/rate-limit'
 import { useRuntimeConfig } from '#imports'
 
