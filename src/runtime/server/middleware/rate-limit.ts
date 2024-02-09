@@ -8,7 +8,7 @@ import { useRuntimeConfig } from '#imports'
  * Only works on API routes, eg: /api/hello
  */
 export default defineEventHandler(async (event) => {
-  const { headers } = useRuntimeConfig().nuxtRateLimit
+  const { headers, statusMessage } = useRuntimeConfig().nuxtRateLimit
 
   const payload = getRateLimitPayload(event)
   // route does not have rate limiting configured
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   if (limited) {
     throw createError({
       statusCode: 429,
-      statusMessage: `Too many requests. Please try again in ${secondsUntilReset} seconds.`,
+      statusMessage: statusMessage.replace(':value:', String(secondsUntilReset))
     })
   }
 })

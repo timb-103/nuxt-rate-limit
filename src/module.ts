@@ -7,6 +7,7 @@ export interface ModuleOptions {
   enabled: boolean
   routes: RateLimitRoutes
   headers: boolean
+  statusMessage?: string
 }
 
 export interface RateLimitOptions {
@@ -22,6 +23,7 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     enabled: true,
     headers: true,
+    statusMessage: 'Too many requests. Please try again in :value: seconds.',
     routes: {
       '/api/*': {
         intervalSeconds: 60,
@@ -39,7 +41,7 @@ export default defineNuxtModule<ModuleOptions>({
     // add options to runtime config
     nuxt.options.runtimeConfig.nuxtRateLimit = defu(
       nuxt.options.runtimeConfig.nuxtRateLimit,
-      { headers: options.headers }
+      { headers: options.headers, statusMessage: options.statusMessage }
     )
 
     // merge with route rules, so we get free route matching with baseURL support
