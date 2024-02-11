@@ -38,7 +38,8 @@ That's it! You can now use Nuxt Rate Limit in your Nuxt app ✨
 | name | type | default | description |
 | --- | --- | --- | --- |
 | `enabled` | `boolean` | `true` | Enabled/disable the rate limit module |
-| `enabled` | `boolean` | `true` | Add x-ratelimit headers to response |
+| `headers` | `boolean` | `true` | Add x-ratelimit headers to response |
+| `statusMessage` | `string` | `Too many requests. Please try again in :value: seconds.` | Customize error message. `:value:` will be replaced by seconds until reset |
 | `routes` | `object` | [`{}`](https://github.com/timb-103/nuxt-rate-limit/edit/master/README.md#default-rate-limit) | [Add rate limits per route](https://github.com/timb-103/nuxt-rate-limit/edit/master/README.md#different-limits-per-route) |
 
 ## Default Rate Limit
